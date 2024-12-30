@@ -1,4 +1,3 @@
-
 #  Question 1 : Calculate the average movie rating for each genre.
 
 WITH AvgRatings AS (
@@ -11,10 +10,3 @@ FROM AvgRatings ar
 JOIN movie g ON ar.movieId = g.movieId
 GROUP BY g.genres
 order by avg_genre_rating desc;
-
-
-
-
-
-
-
