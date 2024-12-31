@@ -1,48 +1,54 @@
-#  Question 1 : Calculate the average movie rating for each genre.
+# DATA CLEANIGN
 
-WITH AvgRatings AS (
-    SELECT movieId, AVG(rating) AS avg_rating
-    FROM rating 
-    GROUP BY movieId
-)
-SELECT g.genres, AVG(ar.avg_rating) AS avg_genre_rating
-FROM AvgRatings ar
-JOIN movie g ON ar.movieId = g.movieId
-GROUP BY g.genres
-order by avg_genre_rating desc;
+ALTER TABLE CREDIT_CARD 
+CHANGE COLUMN `ï»¿Client_Num`  CLIENT_NUM INT ;
 
+ALTER TABLE CC_ADD 
+CHANGE COLUMN `ï»¿Client_Num`  CLIENT_NUM INT ;
 
+ALTER TABLE CUST_ADD
+CHANGE COLUMN `ï»¿Client_Num`  CLIENT_NUM INT ;
 
-select movieid , title , count(*) as rating_count 
-from movie group by movieid , title
-order by rating_count desc ;
-
-WITH RatingCount AS (
-    SELECT movieId, COUNT(*) AS rating_count
-    FROM rating
-    GROUP BY movieId
-)
-SELECT m.movieId, m.title, rc.rating_count
-FROM RatingCount rc
-JOIN movie m ON rc.movieId = m.movieId
-ORDER BY rc.rating_count DESC
-LIMIT 5;
-
-select count(*) rating from rating;
-select count(*) movie from movie;
-
-select * from rating;
-show columns from rating
-
-;
+SHOW COLUMNS FROM CREDIT_CARD;
 
 
-create  index suraj on rating(movieid);
 
-select count(movieid) as count from rating where movieid = 300;
+# Write a query to retrieve the total number of customers (CLIENT_NUM) grouped by GENDER and MARITAL_STATUS.
 
-drop index suraj on rating;
+SELECT GENDER , MARITAL_STATUS ,  COUNT(CLIENT_NUM) AS TOTAL_CLIENTS 
+ FROM CUSTOMER
+ GROUP BY GENDER  , MARITAL_STATUS
+ ORDER BY TOTAL_CLIENTS DESC;
+ 
+ 
+# Question 2 : Calculate the total Annual_Fees and average Credit_Limit for each Card_Category
+
+SELECT CARD_CATEGORY , SUM(ANNUAL_FEES) AS TOTAL_FEE , 
+ROUND(AVG(CREDIT_LIMIT),2) AS AVERAGE_CREDIT_LIMIT
+FROM CREDIT_CARD
+GROUP BY CARD_CATEGORY;
+ 
+# 3 Find customers with an Avg_Utilization_Ratio greater than 0.5 and list their CLIENT_NUM and Credit_Limit.
+
+CREATE INDEX  UTILIZATION ON CREDIT_CARD(AVG_UTILIZATION_RATIO) ; 
+SELECT CLIENT_NUM  , CREDIT_LIMIT , AVG_UTILIZATION_RATIO   FROM CREDIT_CARD
+WHERE AVG_UTILIZATION_RATIO  >  0.5
+ORDER BY AVG_UTILIZATION_RATIO DESC ;
+  
+# FINDING ATEGORY WISE TOTA COUNT WITH UTILIZATION 
 
 
 
 
+# MEDIUM LEVEL QUERY QUESTIONS
+
+# 4 Question: Find the top 5 customers with the highest Total_Trans_Amt in each quarter
+
+SELECT * FROM 
+(SELECT CARD_CATEGORY , CLIENT_NUM , QTR ,  SUM(TOTAL_TRANS_AMT)AS TOTAL_TRANSACTION,
+ROW_NUMBER() OVER (PARTITION BY QTR ORDER BY  SUM(TOTAL_TRANS_AMT) DESC ) AS RN
+  FROM CREDIT_CARD
+GROUP BY CLIENT_NUM , CARD_CATEGORY ,  QTR) RANKING
+WHERE RN <= 5;
+ 
+ SELECT * FROM CREDIT_CARD;
